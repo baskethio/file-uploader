@@ -7,16 +7,20 @@ import { FileType } from "./types/files";
 const SERVER_URL = "http://localhost:5000";
 
 function App() {
-	const [file, setFile] = useState<File | null>();
+	const [file, setFile] = useState<File | null>(null);
 	const [files, setFiles] = useState([]);
 
-	const uploadFile = () => {
+	const uploadFile = (e: React.FormEvent<HTMLFormElement>) => {
+		e.preventDefault();
 		if (file) {
-			const formData = new FormData();
+			let formData = new FormData();
 			formData.append("file", file);
 			axios
 				.post(`${SERVER_URL}/files`, formData)
-				.then((response) => {})
+				.then((response) => {
+					console.log(response);
+					getFiles();
+				})
 				.catch((error) => {});
 		}
 	};
@@ -39,8 +43,10 @@ function App() {
 		<div>
 			<h3>File upload</h3>
 			<Center>
-				<FileInput placeholder="Pick file" onChange={setFile} />
-				<Button onClick={uploadFile}>Upload</Button>
+				<form onSubmit={uploadFile}>
+					<FileInput placeholder="Pick file" onChange={setFile} />
+					<Button type="submit">Upload</Button>
+				</form>
 			</Center>
 			{
 				<Table>
