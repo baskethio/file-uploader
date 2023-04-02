@@ -7,6 +7,7 @@ var formidable = require("formidable");
 const path = require("path");
 const { log, error } = require("console");
 const uploadFolder = path.join(__dirname, "uploads");
+const fs = require("fs");
 
 const pool = mysql.createPool({
 	host: "localhost",
@@ -41,11 +42,16 @@ app.post("/files", function (req, res) {
 		if (err) {
 			error(err);
 		}
+		const newFile = `${uploadFolder}/${file.originalFilename}`;
+		fs.rename(file.filepath, newFile, (err) => {
+			if (err) error(err);
+		});
+
 		pool.query(
 			"INSERT INTO files (file_name, file_size) VALUES (?,?)",
 			[file.originalFilename, file.size],
 			function (err, rows, fields) {
-				if (err) console.error(err);
+				if (err) error(err);
 				// res.json(rows);
 			}
 		);
