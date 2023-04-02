@@ -50,7 +50,9 @@ function App() {
 
 	return (
 		<div>
-			<h3>File upload</h3>
+			<Center>
+				<h3>File upload</h3>
+			</Center>
 			<form onSubmit={uploadFile}>
 				<Center>
 					<FileInput placeholder="Pick file" onChange={setFile} />
