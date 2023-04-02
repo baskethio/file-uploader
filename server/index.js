@@ -34,6 +34,32 @@ app.get("/files", function (req, res) {
 	});
 });
 
+app.delete("/files/:id", function (req, res) {
+	const { id } = req.params;
+	pool.query(
+		"DELETE FROM files WHERE file_id = ? ",
+		[id],
+		function (err, rows, fields) {
+			if (err) console.error(err);
+		}
+	);
+	pool.query(
+		"SELECT * FROM files WHERE file_id = ? ",
+		[id],
+		function (err, rows, fields) {
+			if (err) console.error(err);
+			if (rows && rows.length > 0) {
+				fs.unlink(`${uploadFolder}/${rows[0].file_name}`, (err) => {
+					if (err) {
+						throw err;
+					}
+					res.json(rows);
+				});
+			}
+		}
+	);
+});
+
 app.post("/files", function (req, res) {
 	const form = formidable();
 	form.maxFileSize = 10 * 1024 * 1024;

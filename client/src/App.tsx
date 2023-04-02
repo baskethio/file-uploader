@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import "./App.css";
-import { FileInput, Button, Center, Table } from "@mantine/core";
+import { FileInput, Button, Center, Table, ActionIcon } from "@mantine/core";
 import axios from "axios";
 import { FileType } from "./types/files";
 
@@ -24,6 +24,15 @@ function App() {
 				.catch((error) => {});
 		}
 	};
+	const deleteFile = (id: number) => {
+		axios
+			.delete(`${SERVER_URL}/files/${id}`)
+			.then((response) => {
+				console.log(response);
+				getFiles();
+			})
+			.catch((error) => {});
+	};
 
 	const getFiles = () => {
 		axios
@@ -42,12 +51,12 @@ function App() {
 	return (
 		<div>
 			<h3>File upload</h3>
-			<Center>
-				<form onSubmit={uploadFile}>
+			<form onSubmit={uploadFile}>
+				<Center>
 					<FileInput placeholder="Pick file" onChange={setFile} />
 					<Button type="submit">Upload</Button>
-				</form>
-			</Center>
+				</Center>
+			</form>
 			{
 				<Table>
 					<thead>
@@ -55,6 +64,7 @@ function App() {
 							<td>File name</td>
 							<td>Size</td>
 							<td>Upload Date</td>
+							<td>Delete</td>
 						</tr>
 					</thead>
 					<tbody>
@@ -63,6 +73,16 @@ function App() {
 								<td>{file.file_name}</td>
 								<td>{file.file_size}</td>
 								<td>{new Date(file.upload_date).toDateString()}</td>
+								<td>
+									<ActionIcon
+										color="red"
+										onClick={() => {
+											deleteFile(file.file_id);
+										}}
+									>
+										x
+									</ActionIcon>
+								</td>
 							</tr>
 						))}
 					</tbody>
